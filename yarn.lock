@@ -2409,10 +2409,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cytoscape@npm:^3.21.2":
-  version: 3.21.2
-  resolution: "@types/cytoscape@npm:3.21.2"
-  checksum: 10c0/6a3dd6c3ac0f3502a2f5116033cd090f22c22cbcc66a7c2b65bb0f9a122a5177f58d152602105d60f80b9be779bef9aba530cf353b083a88081316c7db22168e
+"@types/cytoscape@npm:^3.21.3":
+  version: 3.21.3
+  resolution: "@types/cytoscape@npm:3.21.3"
+  checksum: 10c0/1e5a5458561e3078002c7d59c6b6e28c6915b112e51eaf4d2787b10d31e43281207a41c364a160850353347c42cc338a51bf2ee611c81f019e3611281616e264
   languageName: node
   linkType: hard
 
@@ -3764,7 +3764,7 @@ __metadata:
     "@rollup/plugin-node-resolve": "npm:^15.2.3"
     "@rollup/plugin-replace": "npm:^5.0.7"
     "@rollup/plugin-typescript": "npm:^11.1.6"
-    "@types/cytoscape": "npm:^3.21.2"
+    "@types/cytoscape": "npm:^3.21.3"
     "@types/jest": "npm:^29.5.12"
     "@typescript-eslint/eslint-plugin": "npm:^7.12.0"
     "@typescript-eslint/parser": "npm:^7.12.0"

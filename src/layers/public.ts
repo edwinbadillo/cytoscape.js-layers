@@ -14,7 +14,7 @@ export interface IRenderFunction {
 }
 
 export interface IDOMUpdateFunction<T extends HTMLElement | SVGElement> {
-  (node: T): void;
+  (node: T, e?:any): void;
 }
 
 export interface ILayerOptions {
@@ -55,7 +55,7 @@ export interface ICustomLayer extends IMoveAbleLayer {
   visible: boolean;
 
   updateOnRender: boolean;
-  update(): void;
+  update(e?:any): void;
   updateOnRenderOnce(): void;
 }
 

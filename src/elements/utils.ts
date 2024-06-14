@@ -6,6 +6,7 @@ export interface IMatchOptions<T extends HTMLElement | SVGElement> {
   enter: (node: cy.NodeSingular, bb: cy.BoundingBox12 & cy.BoundingBoxWH) => T;
   update: (elem: T, node: cy.NodeSingular, bb: cy.BoundingBox12 & cy.BoundingBoxWH) => void;
   uniqueElements: boolean;
+  allowPartialUpdate: boolean;
 }
 
 export function matchNodes<T extends HTMLElement | SVGElement>(
@@ -15,7 +16,7 @@ export function matchNodes<T extends HTMLElement | SVGElement>(
 ) {
   const arr = Array.from(root.children) as T[];
   if (!options.uniqueElements) {
-    nodes.forEach((node) => {
+    nodes.forEach((node: cy.NodeSingular) => {
       if (node.removed()) {
         return;
       }
@@ -40,8 +41,16 @@ export function matchNodes<T extends HTMLElement | SVGElement>(
   const map = new Map(arr.map((d) => [d.dataset.id!, d] as [string, T]));
 
   let i = -1;
-  nodes.forEach((node) => {
+  nodes.forEach((node: cy.NodeSingular) => {
     if (node.removed()) {
+      if (options.allowPartialUpdate) {
+        const id = node.id();
+        const htmlNode = map.get(id);
+        map.delete(id)
+        if (htmlNode) {
+          htmlNode.remove();
+        }  
+      }
       return;
     }
     const bb = options.bb(node);
@@ -75,8 +84,11 @@ export function matchNodes<T extends HTMLElement | SVGElement>(
     }
     arr.splice(i, 0, n);
   });
-  // delete rest
-  map.forEach((n) => n.remove());
+  // z
+  if (!options.allowPartialUpdate) {
+      // delete rest
+      map.forEach((n) => n.remove());
+  }
 }
 
 export interface ICallbackRemover {

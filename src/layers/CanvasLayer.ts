@@ -56,7 +56,9 @@ export class CanvasBaseLayer extends ABaseLayer implements ILayerImpl {
     return this;
   }
 
-  readonly update = () => this.draw();
+  readonly update = () => {
+    return this.draw();
+  }
 
   clear() {
     const ctx = this.ctx;

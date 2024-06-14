@@ -15,7 +15,6 @@ npm-debug.log*
 
 # Build files
 /.tmp
-/build
 
 *.tgz
 /.vscode/extensions.json

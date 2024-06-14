@@ -27,6 +27,11 @@ export interface INodeDOMLayerOption<T extends HTMLElement | SVGElement> extends
    */
   uniqueElements: boolean;
   /**
+   * Determines whether a single update is allowed. If true, it will use uniqueElements.
+   * @default false
+   */
+  allowPartialUpdate: boolean;
+  /**
    * init function for newly created DOM elements
    * @param elem
    * @param node
@@ -82,6 +87,7 @@ export function renderPerNode(
         includeOverlays: false,
       },
       uniqueElements: false,
+      allowPartialUpdate: false,
       initCollection: () => undefined,
     },
     defaultElementLayerOptions(options),
@@ -102,10 +108,20 @@ export function renderPerNode(
     });
   };
 
+  const removeNode = (e: any) => {
+    const node = e.target;
+    nodes = nodes.difference(node);
+    layer.update(node)
+  };
+
   const reevaluateCollection = (current: cy.NodeCollection) => {
     // clean up old
     if (o.updateOn !== 'none' && o.updateOn !== 'render') {
       current.off(o.updateOn, undefined, layer.updateOnRenderOnce);
+
+      if (o.allowPartialUpdate) {
+        current.off('remove', o.selector, removeNode);
+      }
     }
 
     // init new
@@ -113,6 +129,9 @@ export function renderPerNode(
     o.initCollection(newNodes);
     if (o.updateOn !== 'none' && o.updateOn !== 'render') {
       newNodes.on(o.updateOn, layer.updateOnRenderOnce);
+      if (o.allowPartialUpdate) {
+        newNodes.on('remove', o.selector, removeNode);
+      }
     }
     layer.updateOnRenderOnce();
     return newNodes;
@@ -123,7 +142,12 @@ export function renderPerNode(
   }
   if (!o.queryEachTime) {
     nodes = reevaluateCollection(nodes);
-    layer.cy.on('add remove', o.selector, revaluateAndUpdateOnce);
+    if (o.allowPartialUpdate && o.updateOn !== 'none' && o.updateOn !== 'render') {
+      layer.cy.on('add', o.selector, revaluateAndUpdateOnce);
+      layer.cy.on('remove', o.selector, removeNode);
+    } else {
+      layer.cy.on('add remove', o.selector, revaluateAndUpdateOnce);
+    }
   }
 
   const wrapResult = (v: ICallbackRemover): IRenderPerNodeResult => ({
@@ -132,6 +156,9 @@ export function renderPerNode(
     remove: () => {
       if (o.updateOn !== 'none' && o.updateOn !== 'render') {
         nodes.off(o.updateOn, undefined, layer.updateOnRenderOnce);
+        if (o.allowPartialUpdate) {
+          nodes.off('remove', o.selector, removeNode);
+        }
       }
       layer.cy.off('add remove', o.selector, revaluateAndUpdateOnce);
       v.remove();
@@ -145,7 +172,7 @@ export function renderPerNode(
       if (o.queryEachTime) {
         nodes = reevaluateCollection(nodes);
       }
-      nodes.forEach((node) => {
+      nodes.forEach((node: cy.NodeSingular) => {
         if (node.removed()) {
           return;
         }
@@ -173,7 +200,8 @@ export function renderPerNode(
   const baseOptions = {
     bb: (node: cy.NodeSingular) => node.boundingBox(oDOM.boundingBox),
     isVisible: oDOM.checkBounds ? (bb: cy.BoundingBox12 & cy.BoundingBoxWH) => layer.inVisibleBounds(bb) : () => true,
-    uniqueElements: oDOM.uniqueElements === true,
+    uniqueElements: oDOM.uniqueElements === true || oDOM.allowPartialUpdate === true,
+    allowPartialUpdate: oDOM.allowPartialUpdate === true,
   };
   if (oDOM.checkBounds) {
     layer.updateOnTransform = true;
@@ -200,11 +228,17 @@ export function renderPerNode(
         render(elem, node, bb);
       },
     };
-    const renderer = (root: HTMLElement) => {
+    const renderer = (root: HTMLElement, node: cy.NodeCollection) => {
       if (o.queryEachTime) {
         nodes = reevaluateCollection(nodes);
+        matchNodes(root, nodes, matchOptions);
       }
-      matchNodes(root, nodes, matchOptions);
+      else if (node?.isNode?.()) {
+        matchNodes(root, node, matchOptions);
+      }
+      else {
+        matchNodes(root, nodes, matchOptions);
+      }
     };
     return wrapResult(registerCallback(layer, renderer));
   }
@@ -229,11 +263,17 @@ export function renderPerNode(
       render(elem, node, bb);
     },
   };
-  const renderer = (root: SVGElement) => {
+  const renderer = (root: SVGElement, node: cy.NodeCollection) => {
     if (o.queryEachTime) {
       nodes = reevaluateCollection(nodes);
+      matchNodes(root, nodes, matchOptions);
     }
-    matchNodes(root, nodes, matchOptions);
+    else if (node?.isNode?.()) {
+      matchNodes(root, node, matchOptions);
+    }
+    else {
+      matchNodes(root, nodes, matchOptions);
+    }
   };
   return wrapResult(registerCallback(layer, renderer));
 }

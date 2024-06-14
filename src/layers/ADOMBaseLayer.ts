@@ -16,9 +16,9 @@ export abstract class ADOMBaseLayer<T extends HTMLElement | SVGElement> extends 
 
   abstract get node(): T;
 
-  readonly update = () => {
+  readonly update = (e?:any) => {
     for (const o of this.callbacks) {
-      o(this.node);
+      o(this.node, e);
     }
   };
 

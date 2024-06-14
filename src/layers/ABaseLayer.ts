@@ -69,7 +69,7 @@ export abstract class ABaseLayer implements IMoveAbleLayer {
     });
   };
 
-  abstract readonly update: () => void;
+  abstract readonly update: (e?:any) => void;
 
   get cy() {
     return this.adapter.cy;
