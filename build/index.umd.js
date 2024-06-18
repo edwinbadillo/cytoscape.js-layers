@@ -502,7 +502,7 @@
                 const impl = edge._private.rscratch;
                 const s = impl && impl.startX != null && impl.startY != null ? { x: impl.startX, y: impl.startY } : edge.sourceEndpoint();
                 const t = impl && impl.endX != null && impl.endY != null ? { x: impl.endX, y: impl.endY } : edge.targetEndpoint();
-                if (!hint.forExport &&
+                if (!(hint === null || hint === void 0 ? void 0 : hint.forExport) &&
                     o.checkBounds &&
                     o.checkBoundsPointCount > 0 &&
                     !anyVisible(layer, s, t, o.checkBoundsPointCount)) {

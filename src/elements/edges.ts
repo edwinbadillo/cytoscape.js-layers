@@ -76,7 +76,7 @@ export function renderPerEdge(
     if (o.queryEachTime) {
       edges = reevaluateCollection(edges);
     }
-    edges.forEach((edge) => {
+    edges.forEach((edge: cy.EdgeSingular) => {
       if (edge.removed()) {
         return;
       }
@@ -92,7 +92,7 @@ export function renderPerEdge(
       const t = impl && impl.endX != null && impl.endY != null ? { x: impl.endX, y: impl.endY } : edge.targetEndpoint();
 
       if (
-        !hint.forExport &&
+        !hint?.forExport &&
         o.checkBounds &&
         o.checkBoundsPointCount > 0 &&
         !anyVisible(layer, s, t, o.checkBoundsPointCount)

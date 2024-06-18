@@ -46,10 +46,10 @@ export function matchNodes<T extends HTMLElement | SVGElement>(
       if (options.allowPartialUpdate) {
         const id = node.id();
         const htmlNode = map.get(id);
-        map.delete(id)
+        map.delete(id);
         if (htmlNode) {
           htmlNode.remove();
-        }  
+        }
       }
       return;
     }
@@ -84,10 +84,9 @@ export function matchNodes<T extends HTMLElement | SVGElement>(
     }
     arr.splice(i, 0, n);
   });
-  // z
   if (!options.allowPartialUpdate) {
-      // delete rest
-      map.forEach((n) => n.remove());
+    // delete rest
+    map.forEach((n) => n.remove());
   }
 }
 

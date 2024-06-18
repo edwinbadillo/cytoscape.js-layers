@@ -4,6 +4,11 @@ import { SVG_NS } from '../layers/SVGLayer';
 import { matchNodes, registerCallback, ICallbackRemover, IMatchOptions } from './utils';
 import { IElementLayerOptions, defaultElementLayerOptions } from './common';
 
+export interface INodeCollection extends cy.NodeCollection {
+  isNode(): boolean;
+}
+
+
 export interface INodeLayerOption extends IElementLayerOptions {
   /**
    * how to compute the bounding box
@@ -111,7 +116,7 @@ export function renderPerNode(
   const removeNode = (e: any) => {
     const node = e.target;
     nodes = nodes.difference(node);
-    layer.update(node)
+    layer.update(node);
   };
 
   const reevaluateCollection = (current: cy.NodeCollection) => {
@@ -228,15 +233,13 @@ export function renderPerNode(
         render(elem, node, bb);
       },
     };
-    const renderer = (root: HTMLElement, node: cy.NodeCollection) => {
+    const renderer = (root: HTMLElement, node: INodeCollection) => {
       if (o.queryEachTime) {
         nodes = reevaluateCollection(nodes);
         matchNodes(root, nodes, matchOptions);
-      }
-      else if (node?.isNode?.()) {
+      } else if (node?.isNode?.()) {
         matchNodes(root, node, matchOptions);
-      }
-      else {
+      } else {
         matchNodes(root, nodes, matchOptions);
       }
     };
@@ -263,15 +266,13 @@ export function renderPerNode(
       render(elem, node, bb);
     },
   };
-  const renderer = (root: SVGElement, node: cy.NodeCollection) => {
+  const renderer = (root: SVGElement, node: INodeCollection) => {
     if (o.queryEachTime) {
       nodes = reevaluateCollection(nodes);
       matchNodes(root, nodes, matchOptions);
-    }
-    else if (node?.isNode?.()) {
+    } else if (node?.isNode?.()) {
       matchNodes(root, node, matchOptions);
-    }
-    else {
+    } else {
       matchNodes(root, nodes, matchOptions);
     }
   };
