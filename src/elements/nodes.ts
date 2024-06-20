@@ -123,10 +123,9 @@ export function renderPerNode(
     // clean up old
     if (o.updateOn !== 'none' && o.updateOn !== 'render') {
       current.off(o.updateOn, undefined, layer.updateOnRenderOnce);
-
-      if (o.allowPartialUpdate) {
-        current.off('remove', o.selector, removeNode);
-      }
+    }
+    if (o.allowPartialUpdate) {
+      layer.cy.off('remove', o.selector, removeNode);
     }
 
     // init new
@@ -134,10 +133,11 @@ export function renderPerNode(
     o.initCollection(newNodes);
     if (o.updateOn !== 'none' && o.updateOn !== 'render') {
       newNodes.on(o.updateOn, layer.updateOnRenderOnce);
-      if (o.allowPartialUpdate) {
-        newNodes.on('remove', o.selector, removeNode);
-      }
     }
+    if (o.allowPartialUpdate) {
+      layer.cy.on('remove', o.selector, removeNode);
+    }
+    
     layer.updateOnRenderOnce();
     return newNodes;
   };
@@ -162,7 +162,7 @@ export function renderPerNode(
       if (o.updateOn !== 'none' && o.updateOn !== 'render') {
         nodes.off(o.updateOn, undefined, layer.updateOnRenderOnce);
         if (o.allowPartialUpdate) {
-          nodes.off('remove', o.selector, removeNode);
+          layer.cy.off('remove', o.selector, removeNode);
         }
       }
       layer.cy.off('add remove', o.selector, revaluateAndUpdateOnce);

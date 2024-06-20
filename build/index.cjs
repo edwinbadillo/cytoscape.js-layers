@@ -581,17 +581,17 @@ function renderPerNode(layer, render, options = {}) {
     const reevaluateCollection = (current) => {
         if (o.updateOn !== 'none' && o.updateOn !== 'render') {
             current.off(o.updateOn, undefined, layer.updateOnRenderOnce);
-            if (o.allowPartialUpdate) {
-                current.off('remove', o.selector, removeNode);
-            }
+        }
+        if (o.allowPartialUpdate) {
+            layer.cy.off('remove', o.selector, removeNode);
         }
         const newNodes = layer.cy.nodes(o.selector);
         o.initCollection(newNodes);
         if (o.updateOn !== 'none' && o.updateOn !== 'render') {
             newNodes.on(o.updateOn, layer.updateOnRenderOnce);
-            if (o.allowPartialUpdate) {
-                newNodes.on('remove', o.selector, removeNode);
-            }
+        }
+        if (o.allowPartialUpdate) {
+            layer.cy.on('remove', o.selector, removeNode);
         }
         layer.updateOnRenderOnce();
         return newNodes;
@@ -616,7 +616,7 @@ function renderPerNode(layer, render, options = {}) {
             if (o.updateOn !== 'none' && o.updateOn !== 'render') {
                 nodes.off(o.updateOn, undefined, layer.updateOnRenderOnce);
                 if (o.allowPartialUpdate) {
-                    nodes.off('remove', o.selector, removeNode);
+                    layer.cy.off('remove', o.selector, removeNode);
                 }
             }
             layer.cy.off('add remove', o.selector, revaluateAndUpdateOnce);
